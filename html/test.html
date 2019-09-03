@@ -1,0 +1,23 @@
+<form action="http://localhost:8080/myapp/DB/add_user" method=POST>
+	<p><input type="text" value="Nome" name="name"></p>
+	<p><input type="text" value="Nascimento dd-mm-yy" name="birthdate"></p>
+	<p><input type="submit" value="Adicionar Usuário"></p>
+</form>
+
+<form action="http://localhost:8080/myapp/DB/update_user_birthdate" method=POST>
+	<p><input type="text" value="Nome" name="name"></p>
+	<p><input type="text" value="Nascimento dd-mm-yy" name="birthdate"></p>
+	<p><input type="submit" value="Alterar Nascimento"></p>
+</form>
+
+<form action="http://localhost:8080/myapp/DB/delete_user" method=POST>
+	<p><input type="text" value="Nome" name="name"></p>
+	<p><input type="submit" value="Deletar Usuário"></p>
+</form>
+
+<form action="http://localhost:8080/myapp/DB/search" method=GET>
+	<p>
+		<input type="text" value="Pesquisa" name="q">
+		<input type="submit" value="Enviar">
+	</p>
+</form>
