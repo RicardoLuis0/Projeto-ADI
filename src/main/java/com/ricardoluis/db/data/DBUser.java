@@ -12,8 +12,8 @@ import javax.persistence.Table;
 public class DBUser {
 
 	@Id
-	@Column(name="id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name="id")
 	private int id;
 	
 	@Column(name="name",unique=true)
