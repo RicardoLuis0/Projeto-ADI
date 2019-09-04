@@ -46,7 +46,7 @@ public class DBAccess {
         	}
         	transaction = session.beginTransaction();
         	@SuppressWarnings("unchecked")
-			Query<DBUser> query=session.createQuery("from users "+("like ? ".repeat(args.length)));
+			Query<DBUser> query=session.createQuery("from DBUser as u where "+(" u.name like ? ".repeat(args.length)));
         	for(int i=0;i<args.length;i++) {
         		query.setParameter(i, "%"+args[i]+"%");
         	}
