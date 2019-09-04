@@ -26,8 +26,7 @@ public class DBUser {
 		
 	}
 	
-	public DBUser(int id,String name, String birthdate) {
-		this.id=id;
+	public DBUser(String name, String birthdate) {
 		this.name = name;
 		this.birthdate = birthdate;
 	}
