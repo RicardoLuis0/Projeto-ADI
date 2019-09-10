@@ -31,7 +31,7 @@ public class ConnectionManager {
 	 * @throws SQLException
 	 */
 	private static Connection openConnection() throws SQLException {
-		return (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/ADI_Prj?user=root&password=");
+		return (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/PrjADI?user=root&password=");
 	}
 	
 	/**
