@@ -10,7 +10,7 @@ public class SimpleConnector extends JDBCConnector {
 
 	@Override
 	public Connection openConnection() throws SQLException {
-		return (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/ADI_Test?user=root&password=");
+		return (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/PrjADI?user=root&password=");
 	}
 
 	@Override
