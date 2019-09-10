@@ -1,4 +1,4 @@
-package com.ricardoluis.db.jdbc;
+package com.ricardoluis.jdbc.connectors;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -58,7 +58,7 @@ public class ConnectionManager {
 	 * Returns a database connection
 	 * @param conn connection to be returned
 	 */
-	public static void returnConnection(Connection conn){
+	public static void returnConnection(Connection conn) {
 		try {
 			if(conn!=null&&conn.isValid(0)) {
 				connections.push(conn);//if the connection is valid, return it
