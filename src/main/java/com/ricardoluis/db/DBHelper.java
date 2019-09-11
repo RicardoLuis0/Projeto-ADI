@@ -23,7 +23,7 @@ public class DBHelper {
 	
 	public byte[] generateSaltedHash(int iter,byte[] salt,String data) {
 		try {
-			return SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1").generateSecret(new PBEKeySpec(data.toCharArray(),salt,iter,64)).getEncoded();
+			return SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1").generateSecret(new PBEKeySpec(data.toCharArray(),salt,iter,64 * 8)).getEncoded();
 		} catch (InvalidKeySpecException e) {
 			throw new RuntimeException(e);
 		} catch (NoSuchAlgorithmException e) {
