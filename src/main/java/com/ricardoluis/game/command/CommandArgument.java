@@ -1,29 +1,34 @@
 package com.ricardoluis.game.command;
 
 public class CommandArgument {
-	private String argName;
-	private Object argValue;
+	private String name;
+	private String value;
+	
+	@Override
+	public String toString() {
+		return name+"="+value;
+	}
 	
 	public CommandArgument(){
 		
 	}
 	
-	public CommandArgument(String argName, Object argValue) {
+	public CommandArgument(String name, String value) {
 		this();
-		this.argName = argName;
-		this.argValue = argValue;
+		this.name = name;
+		this.value = value;
 	}
 
-	public String getArgName() {
-		return argName;
+	public String getName() {
+		return name;
 	}
-	public void setArgName(String argName) {
-		this.argName = argName;
+	public void setName(String name) {
+		this.name = name;
 	}
-	public Object getArgValue() {
-		return argValue;
+	public String getValue() {
+		return value;
 	}
-	public void setArgValue(Object argValue) {
-		this.argValue = argValue;
+	public void setValue(String value) {
+		this.value = value;
 	}
 }

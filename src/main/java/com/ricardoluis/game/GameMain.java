@@ -9,12 +9,13 @@ import javax.ws.rs.core.Response;
 
 import com.ricardoluis.game.command.Command;
 
-@Path("game")
+@Path("run")
 public class GameMain {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response executeCommand(Command cmd) {
+		System.out.println(cmd);
 		return Response.serverError().build();
 	}
 }

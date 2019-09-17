@@ -6,6 +6,11 @@ public class Command {
 	private String command;
 	private ArrayList<CommandArgument> args;
 	
+	@Override
+	public String toString() {
+		return "command: "+command+"\nargs: "+args;
+	}
+	
 	public Command() {
 		
 	}
