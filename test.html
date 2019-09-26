@@ -1,0 +1,64 @@
+<p>
+Type:
+<select id='type'>
+<option>POST</option>
+<option>GET</option>
+</select>
+</p>
+
+<p>
+URL:
+</p>
+<p>
+<input size="100" type='text' id='url' value='http://localhost:8080/game/cmd/create'>
+</input>
+</p>
+
+<p>
+Input:
+</p>
+<p>
+<input size="100" type='text' id='data' value='player=ric'>
+</input>
+</p>
+
+<button onclick='send()' id='button'>send</button>
+
+<p>
+Output:
+</p>
+<p>
+<textarea rows="20" cols="100" readonly id='output'>
+NOTHING
+</textarea>
+</p>
+
+<script>
+function sendHttpAJAX(url,type,method,data){
+	try{
+		var request = new XMLHttpRequest();
+		request.addEventListener("load",method);
+		request.open(type,url,true);
+		request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		request.send(data);
+	}catch(e){
+		console.log(e);
+		console.log(e.stack);
+		return;
+	}
+}
+
+function receive(){
+	document.getElementById("output").innerHTML=this.responseText;
+	document.getElementById("button").removeAttribute("disabled");
+}
+
+function send(){
+	document.getElementById("button").setAttribute("disabled", "disabled");
+	var type_select=document.getElementById("type");
+	var url_input=document.getElementById("url");
+	var data_input=document.getElementById("data");
+	sendHttpAJAX(url_input.value,type_select.value,receive,data_input.value);
+}
+
+</script>

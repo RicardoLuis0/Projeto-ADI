@@ -53,11 +53,22 @@ public class WorldManager {
 	}
 	
 	public boolean validXY(int x,int y) {
-		return (x<0||y<0||x>=sizex||y>=sizey);
+		return (x>=0&&y>=0&&x<sizex&&y<sizey);
 	}
 
 	public WorldTile getXY(int x,int y) {
 		return validXY(x,y)?world.get(x).get(y):new VoidTile();
+	}
+
+	public ArrayList<ArrayList<WorldTile>> look(int xmin,int xmax,int ymin,int ymax){
+		ArrayList<ArrayList<WorldTile>> output=new ArrayList<>();
+		for(int i=xmin;i<xmax;i++) {
+			output.add(new ArrayList<>());
+			for(int j=ymin;j<ymax;j++) {
+				output.get(i-xmin).add(getXY(i,j));
+			}
+		}
+		return output;
 	}
 
 	public ArrayList<ArrayList<WorldTile>> look(int x,int y,int range){
@@ -65,13 +76,6 @@ public class WorldManager {
 		int xmax=x+range;
 		int ymin=y-range;
 		int ymax=y+range;
-		ArrayList<ArrayList<WorldTile>> output=new ArrayList<>();
-		for(int i=xmin;i<xmax;i++) {
-			output.add(new ArrayList<>());
-			for(int j=ymin;j<ymax;j++) {
-				output.get(i).add(getXY(i,j));
-			}
-		}
-		return output;
+		return look(xmin,xmax,ymin,ymax);
 	}
 }

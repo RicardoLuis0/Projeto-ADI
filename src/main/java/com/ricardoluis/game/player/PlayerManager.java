@@ -8,7 +8,7 @@ public class PlayerManager {
 	private ArrayList<Player> players;
 
 	private PlayerManager() {
-		
+		players= new ArrayList<>();
 	}
 
 	public static PlayerManager getInstance() {
