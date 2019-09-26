@@ -77,6 +77,11 @@ public class GameMain {
 	@Produces(MediaType.APPLICATION_JSON)
 	@POST
 	public Response commandSpawn(@FormParam("player") String player_name) {
+		Player p=PlayerManager.getInstance().findPlayer(player_name);
+		if(p==null) {
+			return Response.ok("{\"Error\":\"No such player\"}").build();
+		}
+		//TODO
 		return Response.serverError().build();
 	}
 
@@ -84,6 +89,40 @@ public class GameMain {
 	@Produces(MediaType.APPLICATION_JSON)
 	@POST
 	public Response commandScan(@FormParam("player") String player_name,@FormParam("x") int x,@FormParam("y") int y) {
+		Player p=PlayerManager.getInstance().findPlayer(player_name);
+		if(p==null) {
+			return Response.ok("{\"Error\":\"No such player\"}").build();
+		}
+		//TODO
+		return Response.serverError().build();
+	}
+
+	@Path("attack")
+	@Produces(MediaType.APPLICATION_JSON)
+	@POST
+	public Response commandAttack(@FormParam("player") String player_name,@FormParam("direction") String direction) {
+		Player p=PlayerManager.getInstance().findPlayer(player_name);
+		if(p==null) {
+			return Response.ok("{\"Error\":\"No such player\"}").build();
+		}
+		int dir;
+		switch(direction) {
+		case "up":
+			dir=2;
+			break;
+		case "down":
+			dir=1;
+			break;
+		case "left":
+			dir=3;
+			break;
+		case "right":
+			dir=0;
+			break;
+		default:
+			return Response.ok("{\"Error\":\"Invalid Direction '"+direction.replace("\"","\\\"")+"'\"}").build();
+		}
+		//TODO
 		return Response.serverError().build();
 	}
 }
