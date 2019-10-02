@@ -31,7 +31,7 @@ public class Main {
      */
     public static HttpServer newServer() {
         // create a resource config that scans for JAX-RS resources and providers
-        // in com.ricardo.te2crud package
+        // in com.ricardoluis package
         // create and start a new instance of grizzly http server
         // exposing the Jersey application at BASE_URI
         return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), new ResourceConfig() {
