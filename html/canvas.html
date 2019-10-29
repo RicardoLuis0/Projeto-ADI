@@ -1,0 +1,89 @@
+<script>
+function sendAJAX(url,type,data,callbackOk,callbackFail){
+	try{
+		var request = new XMLHttpRequest();
+		request.addEventListener("load",callbackOk);
+		request.addEventListener("abort",callbackFail);
+		request.addEventListener("error",callbackFail);
+		request.addEventListener("timeout",callbackFail);
+		request.open(type,url,true);
+		request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		if(data!==null){
+			request.send(data);
+		}else{
+			request.send();
+		}
+		return request;
+	}catch(e){
+		console.log(e);
+		console.log(e.stack);
+		return null;
+	}
+}
+
+//decode assoc array as url encoded parameters
+function decodeData(data){
+	var output="?";
+	for(var key in data){
+		if(output.length>1){
+			output+="&";
+		}
+		output+=encodeURIComponent(key)+"="+encodeURIComponent(data[key]);
+	}
+	return output;
+}
+
+function sendPOST(url,data,callbackOk,callbackFail){
+	return sendAJAX(url,"POST",decodeData(data),callbackOk,callbackFail);
+}
+
+function sendGET(url,data,callbackOk,callbackFail){
+	return sendAJAX(url+decodeData(data),"GET",null,callbackOk,callbackFail);
+}
+</script>
+<style>
+#canvasdiv{
+	display:flex;
+	justify-content:space-around;
+	align-items:center;
+	height:100%;
+}
+#canvas{
+	border:1px solid black;
+}
+</style>
+<div id="canvasdiv"><canvas id="canvas" height=500 width=500></canvas></div>
+<script>
+canvas=document.getElementById("canvas");
+ctx=canvas.getContext("2d");
+cwidth=500;
+cheight=500;
+twidth=5;
+theight=5;
+tile_types={
+	"Grass":"#BEFF33",
+	"Stone":"#9B9B9B",
+	"Void":"#000000",
+	"Wall":"#5C5C5C"
+}
+world=null;
+
+function drawWorld(){
+	drawTiles(world,5,5,100,100);
+}
+
+function drawTiles(tiles,width,height,xlen,ylen){
+	for(x=0;x<xlen;x++){
+		for(y=0;y<ylen;y++){
+			var t=tiles[x][y];
+			ctx.fillStyle=tile_types[t.type];
+			ctx.fillRect(x*width,y*height,width,height);
+		}
+	}
+}
+//https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial
+sendGET("http://localhost:8080/game/cmd/getWorld",[],function(){
+	world=JSON.parse(this.responseText);
+	drawWorld();
+},function(){});
+</script>
