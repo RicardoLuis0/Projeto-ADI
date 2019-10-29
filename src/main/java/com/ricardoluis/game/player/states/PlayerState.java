@@ -18,6 +18,7 @@ public abstract class PlayerState {
 	
 	public abstract boolean move(int direction);
 	public abstract ArrayList<ArrayList<WorldTile>> look(int range);
+	public abstract String getStatus();
 
 	protected PlayerStateToken createToken() {
 		return new PlayerStateToken();

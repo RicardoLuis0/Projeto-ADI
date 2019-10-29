@@ -10,6 +10,12 @@ public class PlayerAlive extends PlayerState {
 
 	public PlayerAlive(Player parent) {
 		super(parent);
+		var rand=new java.util.Random();
+		while(true) {
+			int rx=rand.nextInt(WorldManager.sizex);
+			int ry=rand.nextInt(WorldManager.sizey);
+			if(parent.moveXY(rx, ry, createToken()))break;//spawn in random location
+		}
 	}
 	
 	private boolean tryMove(int x,int y) {
@@ -33,6 +39,11 @@ public class PlayerAlive extends PlayerState {
 		default:
 			throw new IllegalArgumentException("Direction must be between 0-3");
 		}
+	}
+
+	@Override
+	public String getStatus() {
+		return "Alive";
 	}
 
 	@Override

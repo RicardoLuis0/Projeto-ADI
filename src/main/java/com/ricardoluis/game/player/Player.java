@@ -38,6 +38,10 @@ public class Player {
 		return state.move(direction);
 	}
 	
+	public String getStatus() {
+		return state.getStatus();
+	}
+	
 	public ArrayList<ArrayList<WorldTile>> look(int range){
 		return state.look(range);
 	}

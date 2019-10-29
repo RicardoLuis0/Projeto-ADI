@@ -21,4 +21,9 @@ public class PlayerDead extends PlayerState {
 		return null;
 	}
 
+	@Override
+	public String getStatus() {
+		return "Dead";
+	}
+
 }

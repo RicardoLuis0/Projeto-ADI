@@ -13,9 +13,9 @@ import com.ricardoluis.game.world.tiles.WorldTile;
 
 public class WorldManager {
 	private static WorldManager instance=new WorldManager();
-	private static final int sizex=100;
-	private static final int sizey=100;
 	private static final int tile_values=30;
+	public static final int sizex=100;
+	public static final int sizey=100;
 
 	private WorldManager() {
 		generateWorld();

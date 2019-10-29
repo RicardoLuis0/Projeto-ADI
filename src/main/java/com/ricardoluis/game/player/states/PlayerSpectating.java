@@ -34,4 +34,9 @@ public class PlayerSpectating extends PlayerState {
 		return WorldManager.getInstance().look(parent.getX(), parent.getY(), range);
 	}
 
+	@Override
+	public String getStatus() {
+		return "Spectating";
+	}
+
 }
