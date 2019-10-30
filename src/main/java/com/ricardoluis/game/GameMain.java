@@ -1,5 +1,6 @@
 package com.ricardoluis.game;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -39,6 +40,7 @@ public class GameMain {
 
 	@Path("create")
 	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@POST
 	public Response commandCreate(@FormParam("player") String player_name) {
 		PlayerManager pm=PlayerManager.getInstance();
@@ -56,16 +58,16 @@ public class GameMain {
 		int dir;
 		switch(direction) {
 		case "up":
-			dir=2;
+			dir=0;
 			break;
 		case "down":
 			dir=1;
 			break;
 		case "left":
-			dir=3;
+			dir=2;
 			break;
 		case "right":
-			dir=0;
+			dir=3;
 			break;
 		default:
 			return Response.ok("{\"error\":\"Invalid Direction '"+direction.replace("\"","\\\"")+"'\"}").build();
@@ -81,14 +83,15 @@ public class GameMain {
 		if(p==null) {
 			return Response.ok("{\"error\":\"No such player\"}").build();
 		}
-		if(p.getStatus()=="Spectating") {
+		switch(p.getStatus()) {//todo move this to states
+		case "Spectating":
 			p.setState(new PlayerAlive(p));
 			return Response.ok("true").build();
-		} else if(p.getStatus()=="Alive"){
-			return Response.ok("{\"error\":\"Player is Already Spawned\"}").build();
-		} else if(p.getStatus()=="Dead"){
+		case "Alive":
+			return Response.ok("{\"error\":\"Player has Already Spawned\"}").build();
+		case "Dead":
 			return Response.ok("{\"error\":\"Player is Dead\"}").build();
-		} else {
+		default:
 			return Response.serverError().build();
 		}
 		
@@ -118,7 +121,7 @@ public class GameMain {
 		if(p==null) {
 			return Response.ok("{\"error\":\"No such player\"}").build();
 		} else {
-			return Response.ok( "{status:\""+p.getStatus()+"\"}").build();
+			return Response.ok( "{\"status\":\""+p.getStatus()+"\"}").build();
 		}
 	}
 
@@ -129,23 +132,6 @@ public class GameMain {
 		Player p=PlayerManager.getInstance().findPlayer(player_name);
 		if(p==null) {
 			return Response.ok("{\"error\":\"No such player\"}").build();
-		}
-		int dir;
-		switch(direction) {
-		case "up":
-			dir=0;
-			break;
-		case "down":
-			dir=1;
-			break;
-		case "left":
-			dir=2;
-			break;
-		case "right":
-			dir=3;
-			break;
-		default:
-			return Response.ok("{\"error\":\"Invalid Direction '"+direction.replace("\"","\\\"")+"'\"}").build();
 		}
 		//TODO
 		return Response.serverError().build();

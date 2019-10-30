@@ -28,14 +28,14 @@ public class PlayerAlive extends PlayerState {
 	@Override
 	public boolean move(int direction) {
 		switch(direction) {
-		case 0://right
-			return tryMove(1, 0);
+		case 0://up
+			return tryMove(0, -1);
 		case 1://down
 			return tryMove(0, 1);
 		case 2://left
 			return tryMove(-1, 0);
-		case 3://up
-			return tryMove(0, -1);
+		case 3://right
+			return tryMove(1, 0);
 		default:
 			throw new IllegalArgumentException("Direction must be between 0-3");
 		}

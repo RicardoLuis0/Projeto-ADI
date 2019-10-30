@@ -23,7 +23,7 @@ function sendAJAX(url,type,data,callbackOk,callbackFail){
 
 //decode assoc array as url encoded parameters
 function decodeData(data){
-	var output="?";
+	var output="";
 	for(var key in data){
 		if(output.length>1){
 			output+="&";
@@ -38,25 +38,66 @@ function sendPOST(url,data,callbackOk,callbackFail){
 }
 
 function sendGET(url,data,callbackOk,callbackFail){
-	return sendAJAX(url+decodeData(data),"GET",null,callbackOk,callbackFail);
+	return sendAJAX(url+"?"+decodeData(data),"GET",null,callbackOk,callbackFail);
 }
 </script>
 <style>
 #canvasdiv{
 	display:flex;
+	flex-direction:column;
 	justify-content:space-around;
 	align-items:center;
 	height:100%;
+}
+.buttondiv{
+	display:flex;
+	flex-direction:column;
+	justify-content:space-evenly;
+	align-content:space-evenly;
+}
+.movediv1{
+	display:flex;
+	justify-content:space-between;
+}
+.movediv2{
+	display:flex;
+	flex-direction:column;
+	justify-content:space-between;
 }
 #canvas{
 	border:1px solid black;
 }
 </style>
-<div id="canvasdiv"><canvas id="canvas" height=50 width=50></canvas></div>
+<div id="canvasdiv">
+	<div class="movediv1">
+		<button type="button" onclick="left()" id="left_btn" disabled=true>Left</button>
+		<div class="movediv2">
+			<button type="button" onclick="up()" id="up_btn" disabled=true>Up</button>
+			<button type="button" onclick="down()" id="down_btn" disabled=true>Down</button>
+		</div>
+		<button type="button" onclick="right()" id="right_btn" disabled=true>Right</button>
+	</div>
+	<canvas id="canvas" height=200 width=200></canvas>
+	<div class="buttondiv">
+		<div>
+			<label for="pname">Player:</label>
+			<input type="text" id="pname"></input>
+		</div>
+		<button type="button" onclick="create()" id="create_btn">Create</button>
+		<button type="button" onclick="start()" id="start_btn">Start</button>
+		<button type="button" onclick="spawn()" id="spawn_btn" disabled=true>Spawn</button>
+	</div>
+</div>
 <script>
 //https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial
 canvas1=document.getElementById("canvas");
 ctx1=canvas1.getContext("2d");
+
+ctx1.fillStyle="#000000"
+ctx1.fillRect(0,0,200,200);
+
+cellx=10;
+celly=10;
 
 tile_types={
 	"Grass":"#BEFF33",
@@ -65,10 +106,26 @@ tile_types={
 	"Wall":"#5C5C5C"
 }
 
-world=null;
+screen=null;
+pname=document.getElementById("pname");
+player_name=null;
+started=false;
 
-function drawWorld(){
-	drawTiles(ctx1,world,5,5,100,100);
+function updateScreen(){
+	if(player_name===null)return;
+	sendPOST("http://localhost:8080/game/cmd/look",{"player":player_name},function(){
+		screen=JSON.parse(this.responseText);
+		if(screen.hasOwnProperty("error")){
+			alert(screen.error);
+			sceen=null;
+		}else{
+			var x=screen.length;
+			var y=screen[0].length;
+			canvas1.width=x*cellx;
+			canvas1.height=y*celly;
+			drawTiles(ctx1,screen,cellx,celly,x,y);
+		}
+	},function(){});
 }
 
 function drawTiles(ctx,tiles,width,height,xlen,ylen){
@@ -81,13 +138,63 @@ function drawTiles(ctx,tiles,width,height,xlen,ylen){
 	}
 }
 
-sendGET("http://localhost:8080/game/cmd/getWorld",[],function(){
-	world=JSON.parse(this.responseText);
-	if(world.hasOwnProperty("error")){
-		alert(world.error);
+function up(){
+}
+function down(){
+}
+function left(){
+}
+function right(){
+}
+function create(){
+	var name=pname.value;
+	if(name.length==0){
+		alert("Could not create player, Player Name is Missing");
 	}else{
-		drawWorld();
+		sendPOST("http://localhost:8080/game/cmd/create",{"player":name},function(){
+			var ret=JSON.parse(this.responseText);
+			if(ret.hasOwnProperty("error")){
+				alert(screen.error);
+			}else if(ret===true){
+				alert("Player '"+name+"' created");
+			}else{
+				alert("Could not create player '"+name+"', It already Exists");
+			}
+		},function(){});
 	}
-},function(){});
+}
+function start(){
+	var name=pname.value;
+	if(name.length==0){
+		alert("Could not start, Player Name is Missing");
+	}else{
+		sendPOST("http://localhost:8080/game/cmd/status",{"player":name},function(){
+			var ret=JSON.parse(this.responseText);
+			if(ret.hasOwnProperty("error")){
+				alert(screen.error);
+			}else{
+				switch(ret.status){
+				case "Alive":
+					alert("Player is Alive");
+					break;
+				case "Spectating":
+					alert("Player is Spectating");
+					break;
+				case "Dead":
+					alert("Player is Dead");
+					break;
+				}
+			}
+		},function(){});
+	}
+}
 
+function unlock_buttons(){
+}
+
+function lock_buttons(){
+}
+
+function spawn(){
+}
 </script>
