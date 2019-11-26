@@ -11,7 +11,7 @@ import javax.ws.rs.core.Response;
 
 import com.ricardoluis.game.player.Player;
 import com.ricardoluis.game.player.PlayerManager;
-import com.ricardoluis.game.player.states.PlayerAlive;
+import com.ricardoluis.game.player.exceptions.PlayerCommandException;
 import com.ricardoluis.game.world.WorldManager;
 
 @Path("cmd")
@@ -55,24 +55,7 @@ public class GameMain {
 		if(p==null) {
 			return Response.ok("{\"error\":\"No such player\"}").build();
 		}
-		int dir;
-		switch(direction) {
-		case "up":
-			dir=0;
-			break;
-		case "down":
-			dir=1;
-			break;
-		case "left":
-			dir=2;
-			break;
-		case "right":
-			dir=3;
-			break;
-		default:
-			return Response.ok("{\"error\":\"Invalid Direction '"+direction.replace("\"","\\\"")+"'\"}").build();
-		}
-		return Response.ok(p.move(dir)?"true":"false").build();
+		return Response.ok(p.move(direction)?"true":"false").build();
 	}
 
 	@Path("spawn")
@@ -83,18 +66,12 @@ public class GameMain {
 		if(p==null) {
 			return Response.ok("{\"error\":\"No such player\"}").build();
 		}
-		switch(p.getStatus()) {//todo move this to states
-		case "Spectating":
-			p.setState(new PlayerAlive(p));
+		try {
+			p.spawn();
 			return Response.ok("true").build();
-		case "Alive":
-			return Response.ok("{\"error\":\"Player has Already Spawned\"}").build();
-		case "Dead":
-			return Response.ok("{\"error\":\"Player is Dead\"}").build();
-		default:
-			return Response.serverError().build();
+		}catch(PlayerCommandException e) {
+			return Response.ok(e.getMessage()).build();
 		}
-		
 	}
 
 	@Path("scan")
@@ -105,12 +82,11 @@ public class GameMain {
 		if(p==null) {
 			return Response.ok("{\"error\":\"No such player\"}").build();
 		}
-		if(p.getStatus()!="Dead") {
-			//TODO
-		} else {
-			return Response.ok("{\"error\":\"Player is Dead\"}").build();
+		try {
+			return Response.ok(p.scan(x,y)).build();
+		}catch(PlayerCommandException e) {
+			return Response.ok(e.getMessage()).build();
 		}
-		return Response.serverError().build();
 	}
 
 	@Path("status")
@@ -133,7 +109,6 @@ public class GameMain {
 		if(p==null) {
 			return Response.ok("{\"error\":\"No such player\"}").build();
 		}
-		//TODO
 		return Response.serverError().build();
 	}
 }

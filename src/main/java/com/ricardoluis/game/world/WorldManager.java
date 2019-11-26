@@ -51,9 +51,11 @@ public class WorldManager {
 	public ArrayList<ArrayList<WorldTile>> getWorld() {
 		return world;
 	}
-	
 	public boolean validXY(int x,int y) {
 		return (x>=0&&y>=0&&x<sizex&&y<sizey);
+	}
+	public boolean validXY(int x,int y,boolean collide) {
+		return (x>=0&&y>=0&&x<sizex&&y<sizey)&&(!collide||!getXY(x,y).isObstacle());
 	}
 
 	public WorldTile getXY(int x,int y) {
