@@ -4,13 +4,14 @@ import java.util.ArrayList;
 
 import com.ricardoluis.eventhandling.Event;
 import com.ricardoluis.eventhandling.EventHandler;
+import com.ricardoluis.eventhandling.EventManager;
 import com.ricardoluis.game.player.events.DamageEvent;
 import com.ricardoluis.game.player.exceptions.PlayerCommandException;
 import com.ricardoluis.game.player.states.PlayerSpectating;
 import com.ricardoluis.game.player.states.PlayerState;
 import com.ricardoluis.game.player.states.PlayerState.PlayerStateToken;
+import com.ricardoluis.game.world.WorldLocation;
 import com.ricardoluis.game.world.WorldManager;
-import com.ricardoluis.game.world.tiles.WorldTile;
 
 public class Player implements EventHandler {
 	private String name;
@@ -18,16 +19,12 @@ public class Player implements EventHandler {
 	private int x;
 	private int y;
 
-	@FunctionalInterface
-	private interface MovePredicate {
-		boolean canMove();
-	}
-
 	public Player(String name) {
 		this.name = name;
 		this.state= new PlayerSpectating(this);
 		this.x=0;
 		this.y=0;
+		EventManager.getInstance().registerHandler(this);
 	}
 
 	public String getName() {
@@ -106,7 +103,7 @@ public class Player implements EventHandler {
 		return state.commandStatus();
 	}
 	
-	public ArrayList<ArrayList<WorldTile>> look(int range){
+	public ArrayList<ArrayList<WorldLocation>> look(int range){
 		return state.commandLook(range);
 	}
 
@@ -130,7 +127,6 @@ public class Player implements EventHandler {
 	}
 
 	public String scan(int x, int y) {
-		// TODO Auto-generated method stub
 		return state.commandScan(x, y);
 	}
 }

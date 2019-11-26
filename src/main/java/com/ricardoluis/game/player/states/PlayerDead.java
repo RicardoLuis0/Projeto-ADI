@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import com.ricardoluis.game.player.Player;
 import com.ricardoluis.game.player.exceptions.PlayerCommandException;
-import com.ricardoluis.game.world.tiles.WorldTile;
+import com.ricardoluis.game.world.WorldLocation;
 
 public class PlayerDead extends PlayerState {
 	
@@ -18,7 +18,7 @@ public class PlayerDead extends PlayerState {
 	}
 
 	@Override
-	public ArrayList<ArrayList<WorldTile>> commandLook(int range) {
+	public ArrayList<ArrayList<WorldLocation>> commandLook(int range) {
 		throw new PlayerCommandException("Player is not Alive");
 	}
 

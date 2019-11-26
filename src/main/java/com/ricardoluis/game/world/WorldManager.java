@@ -5,6 +5,7 @@ import java.util.Random;
 
 import org.spongepowered.noise.Noise;
 
+import com.ricardoluis.game.player.PlayerManager;
 import com.ricardoluis.game.world.tiles.GrassTile;
 import com.ricardoluis.game.world.tiles.StoneTile;
 import com.ricardoluis.game.world.tiles.VoidTile;
@@ -48,8 +49,8 @@ public class WorldManager {
 		}
 	}
 
-	public ArrayList<ArrayList<WorldTile>> getWorld() {
-		return world;
+	public ArrayList<ArrayList<WorldLocation>> getWorld() {
+		return look(0,sizex,0,sizey);
 	}
 	public boolean validXY(int x,int y) {
 		return (x>=0&&y>=0&&x<sizex&&y<sizey);
@@ -62,18 +63,25 @@ public class WorldManager {
 		return validXY(x,y)?world.get(x).get(y):new VoidTile();
 	}
 
-	public ArrayList<ArrayList<WorldTile>> look(int xmin,int xmax,int ymin,int ymax){
-		ArrayList<ArrayList<WorldTile>> output=new ArrayList<>();
+	public ArrayList<ArrayList<WorldLocation>> look(int xmin,int xmax,int ymin,int ymax){
+		ArrayList<ArrayList<WorldLocation>> output=new ArrayList<>();
 		for(int i=xmin;i<xmax;i++) {
 			output.add(new ArrayList<>());
 			for(int j=ymin;j<ymax;j++) {
-				output.get(i-xmin).add(getXY(i,j));
+				output.get(i-xmin).add(new WorldLocation(getXY(i,j)));
 			}
 		}
+		PlayerManager.getInstance().forEach((p)->{
+			int px=p.getX();
+			int py=p.getY();
+			if(px>=xmin&&px<xmax&&py>=ymin&&py<ymax) {
+				output.get(px).get(py).player=p;
+			}
+		});
 		return output;
 	}
 
-	public ArrayList<ArrayList<WorldTile>> look(int x,int y,int range){
+	public ArrayList<ArrayList<WorldLocation>> look(int x,int y,int range){
 		int xmin=x-range;
 		int xmax=x+range;
 		int ymin=y-range;

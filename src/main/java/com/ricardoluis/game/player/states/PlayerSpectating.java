@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import com.ricardoluis.game.player.Player;
 import com.ricardoluis.game.player.exceptions.PlayerCommandException;
+import com.ricardoluis.game.world.WorldLocation;
 import com.ricardoluis.game.world.WorldManager;
-import com.ricardoluis.game.world.tiles.WorldTile;
 
 public class PlayerSpectating extends PlayerDead {
 
@@ -20,7 +20,7 @@ public class PlayerSpectating extends PlayerDead {
 	}
 
 	@Override
-	public ArrayList<ArrayList<WorldTile>> commandLook(int range) {
+	public ArrayList<ArrayList<WorldLocation>> commandLook(int range) {
 		return WorldManager.getInstance().look(parent.getX(), parent.getY(), range);
 	}
 
