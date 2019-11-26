@@ -1,7 +1,7 @@
 <script>
 function sendAJAX(url,type,data,callbackOk,callbackFail){
 	try{
-		var request = new XMLHttpRequest();
+		let request = new XMLHttpRequest();
 		request.addEventListener("load",callbackOk);
 		request.addEventListener("abort",callbackFail);
 		request.addEventListener("error",callbackFail);
@@ -23,8 +23,8 @@ function sendAJAX(url,type,data,callbackOk,callbackFail){
 
 //decode assoc array as url encoded parameters
 function decodeData(data){
-	var output="";
-	for(var key in data){
+	let output="";
+	for(let key in data){
 		if(output.length>1){
 			output+="&";
 		}
@@ -110,6 +110,7 @@ screen=null;
 pname=document.getElementById("pname");
 player_name=null;
 started=false;
+player_status=null;
 
 function updateScreen(){
 	if(player_name===null)return;
@@ -119,8 +120,8 @@ function updateScreen(){
 			alert(screen.error);
 			sceen=null;
 		}else{
-			var x=screen.length;
-			var y=screen[0].length;
+			let x=screen.length;
+			let y=screen[0].length;
 			canvas1.width=x*cellx;
 			canvas1.height=y*celly;
 			drawTiles(ctx1,screen,cellx,celly,x,y);
@@ -131,7 +132,7 @@ function updateScreen(){
 function drawTiles(ctx,tiles,width,height,xlen,ylen){
 	for(x=0;x<xlen;x++){
 		for(y=0;y<ylen;y++){
-			var t=tiles[x][y];
+			let t=tiles[x][y];
 			ctx.fillStyle=tile_types[t.type];
 			ctx.fillRect(x*width,y*height,width,height);
 		}
@@ -147,12 +148,12 @@ function left(){
 function right(){
 }
 function create(){
-	var name=pname.value;
+	let name=pname.value;
 	if(name.length==0){
 		alert("Could not create player, Player Name is Missing");
 	}else{
 		sendPOST("http://localhost:8080/game/cmd/create",{"player":name},function(){
-			var ret=JSON.parse(this.responseText);
+			let ret=JSON.parse(this.responseText);
 			if(ret.hasOwnProperty("error")){
 				alert(screen.error);
 			}else if(ret===true){
@@ -164,12 +165,12 @@ function create(){
 	}
 }
 function start(){
-	var name=pname.value;
+	let name=pname.value;
 	if(name.length==0){
 		alert("Could not start, Player Name is Missing");
 	}else{
 		sendPOST("http://localhost:8080/game/cmd/status",{"player":name},function(){
-			var ret=JSON.parse(this.responseText);
+			let ret=JSON.parse(this.responseText);
 			if(ret.hasOwnProperty("error")){
 				alert(screen.error);
 			}else{
@@ -184,6 +185,7 @@ function start(){
 					alert("Player is Dead");
 					break;
 				}
+				player_status=ret.status;
 			}
 		},function(){});
 	}
