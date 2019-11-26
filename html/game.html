@@ -173,7 +173,7 @@ function start(){
 			if(ret.hasOwnProperty("error")){
 				alert(screen.error);
 			}else{
-				switch(ret.status){
+				switch(ret.status.state){
 				case "Alive":
 					alert("Player is Alive");
 					break;

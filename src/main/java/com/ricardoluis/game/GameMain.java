@@ -97,7 +97,7 @@ public class GameMain {
 		if(p==null) {
 			return Response.ok("{\"error\":\"No such player\"}").build();
 		} else {
-			return Response.ok( "{\"status\":\""+p.getStatus()+"\"}").build();
+			return Response.ok( "{\"status\":"+p.getStatus()+"}").build();
 		}
 	}
 
