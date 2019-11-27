@@ -7,6 +7,7 @@ import com.ricardoluis.eventhandling.EventHandler;
 import com.ricardoluis.eventhandling.EventManager;
 import com.ricardoluis.game.player.events.DamageEvent;
 import com.ricardoluis.game.player.exceptions.PlayerCommandException;
+import com.ricardoluis.game.player.states.PlayerAlive;
 import com.ricardoluis.game.player.states.PlayerSpectating;
 import com.ricardoluis.game.player.states.PlayerState;
 import com.ricardoluis.game.player.states.PlayerState.PlayerStateToken;
@@ -102,7 +103,9 @@ public class Player implements EventHandler {
 	public String getStatus() {
 		return state.commandStatus();
 	}
-	
+	public boolean isAlive() {
+		return (state instanceof PlayerAlive);
+	}
 	public ArrayList<ArrayList<WorldLocation>> look(int range){
 		return state.commandLook(range);
 	}

@@ -72,10 +72,12 @@ public class WorldManager {
 			}
 		}
 		PlayerManager.getInstance().forEach((p)->{
-			int px=p.getX();
-			int py=p.getY();
-			if(px>=xmin&&px<xmax&&py>=ymin&&py<ymax) {
-				output.get(px).get(py).player=p;
+			if(p.isAlive()) {
+				int px=p.getX();
+				int py=p.getY();
+				if(px>=xmin&&px<xmax&&py>=ymin&&py<ymax) {
+					output.get(px-xmin).get(py-ymin).player=p;
+				}
 			}
 		});
 		return output;

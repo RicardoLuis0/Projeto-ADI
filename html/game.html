@@ -69,6 +69,8 @@ function sendGET(url,data,callbackOk,callbackFail){
 }
 </style>
 <div id="canvasdiv">
+	<div id="status_text">Status: Offline</div>
+	<canvas id="canvas" height=200 width=200></canvas>
 	<div class="movediv1">
 		<button type="button" onclick="left()" id="left_btn" disabled=true>Left</button>
 		<div class="movediv2">
@@ -77,7 +79,6 @@ function sendGET(url,data,callbackOk,callbackFail){
 		</div>
 		<button type="button" onclick="right()" id="right_btn" disabled=true>Right</button>
 	</div>
-	<canvas id="canvas" height=200 width=200></canvas>
 	<div class="buttondiv">
 		<div>
 			<label for="pname">Player:</label>
@@ -105,16 +106,24 @@ tile_types={
 	"Void":"#000000",
 	"Wall":"#5C5C5C"
 }
-
+working=false;
 screen=null;
 pname=document.getElementById("pname");
+up_btn=document.getElementById("up_btn");
+down_btn=document.getElementById("down_btn");
+left_btn=document.getElementById("left_btn");
+right_btn=document.getElementById("right_btn");
+create_btn=document.getElementById("create_btn");
+start_btn=document.getElementById("start_btn");
+spawn_btn=document.getElementById("spawn_btn");
+status_text=document.getElementById("status_text");
 player_name=null;
 started=false;
 player_status=null;
 
 function updateScreen(){
 	if(player_name===null)return;
-	sendPOST("http://localhost:8080/game/cmd/look",{"player":player_name},function(){
+	sendPOST("http://localhost:8080/game/cmd/look",{"player":player_name,"range":10},function(){
 		screen=JSON.parse(this.responseText);
 		if(screen.hasOwnProperty("error")){
 			alert(screen.error);
@@ -126,32 +135,76 @@ function updateScreen(){
 			canvas1.height=y*celly;
 			drawTiles(ctx1,screen,cellx,celly,x,y);
 		}
-	},function(){});
+	},function(){alert("Can't reach server");player_status=null;unlock_ui();});
 }
 
 function drawTiles(ctx,tiles,width,height,xlen,ylen){
 	for(x=0;x<xlen;x++){
 		for(y=0;y<ylen;y++){
-			let t=tiles[x][y];
-			ctx.fillStyle=tile_types[t.type];
-			ctx.fillRect(x*width,y*height,width,height);
+			if(tiles[y][x].player!=null){
+				if(tiles[y][x].player.name==player_name){
+					ctx.fillStyle="#00FFFF";
+				}else{
+					ctx.fillStyle="#FF0000";
+				}
+				ctx.fillRect(x*width,y*height,width,height);
+			}else{
+				let t=tiles[y][x];
+				ctx.fillStyle=tile_types[t.tile.type];
+				ctx.fillRect(x*width,y*height,width,height);
+			}
 		}
 	}
 }
 
 function up(){
+	move("up");
 }
 function down(){
+	move("down");
 }
 function left(){
+	move("left");
 }
 function right(){
+	move("right");
 }
+
+function move(direction){
+	function error(){
+		player_status=null;
+		working=false;
+		unlock_ui();
+	}
+	function ok(){
+		unlock_ui();
+		working=false;
+	}
+	if(!working){
+		working=true;
+		lock_ui();
+	sendPOST("http://localhost:8080/game/cmd/move",{"player":player_name,"direction":direction},function(){
+		let ret=JSON.parse(this.responseText);
+		if(ret.hasOwnProperty("error")){
+			alert(ret.error);
+			error();
+		}else{
+			updateScreen();
+			ok();
+		}
+	},function(){alert("Can't reach server");error();});
+		//TODO
+		unlock_ui();
+		working=false;
+	}
+}
+
 function create(){
 	let name=pname.value;
 	if(name.length==0){
 		alert("Could not create player, Player Name is Missing");
 	}else{
+		lock_ui();
 		sendPOST("http://localhost:8080/game/cmd/create",{"player":name},function(){
 			let ret=JSON.parse(this.responseText);
 			if(ret.hasOwnProperty("error")){
@@ -161,42 +214,184 @@ function create(){
 			}else{
 				alert("Could not create player '"+name+"', It already Exists");
 			}
-		},function(){});
+			unlock_ui();
+		},function(){alert("Can't reach server");unlock_ui();});
 	}
 }
+
 function start(){
 	let name=pname.value;
 	if(name.length==0){
 		alert("Could not start, Player Name is Missing");
 	}else{
+		lock_ui();
+		pname.disabled=true;
 		sendPOST("http://localhost:8080/game/cmd/status",{"player":name},function(){
 			let ret=JSON.parse(this.responseText);
 			if(ret.hasOwnProperty("error")){
-				alert(screen.error);
+				alert(ret.error);
 			}else{
-				switch(ret.status.state){
-				case "Alive":
-					alert("Player is Alive");
-					break;
-				case "Spectating":
-					alert("Player is Spectating");
-					break;
-				case "Dead":
-					alert("Player is Dead");
-					break;
-				}
 				player_status=ret.status;
+				player_name=pname.value;
+				updateStatusText();
+				updateScreen();
+				setTimeout(update,500);
 			}
-		},function(){});
+			unlock_ui();
+		},function(){alert("Can't reach server");unlock_ui();});
 	}
 }
 
-function unlock_buttons(){
-}
-
-function lock_buttons(){
+function update(){
+	function error(){
+		player_status=null;
+		unlock_ui();
+	}
+	function ok(){
+		setTimeout(update,500);
+	}
+	if(player_status==null){
+		//DO NOTHING
+	}else if(!working){
+		sendPOST("http://localhost:8080/game/cmd/status",{"player":player_name},function(){
+			let ret=JSON.parse(this.responseText);
+			if(ret.hasOwnProperty("error")){
+				alert(ret.error);
+				error();
+			}else{
+				player_status=ret.status;
+				updateStatusText();
+				if(player_status.state=="Dead"){
+					//TODO
+				}else{
+					updateScreen();
+				}
+				ok();
+			}
+		},function(){alert("Can't reach server");error();});
+	}else{
+		ok();
+	}
 }
 
 function spawn(){
+	if(!working){
+		working=true;
+		lock_ui();
+		function error(){
+			player_status=null;
+			unlock_ui();
+			working=false;
+		}
+		function ok(){
+			unlock_ui();
+			working=false;
+		}
+		sendPOST("http://localhost:8080/game/cmd/spawn",{"player":player_name},function(){
+			let ret=JSON.parse(this.responseText);
+			if(ret.hasOwnProperty("error")){
+				alert(ret.error);
+				error();
+			}else{
+				sendPOST("http://localhost:8080/game/cmd/status",{"player":player_name},function(){
+					let ret2=JSON.parse(this.responseText);
+					if(ret2.hasOwnProperty("error")){
+						alert(ret2.error);
+						error();
+					}else{
+						player_status=ret2.status;
+						updateStatusText();
+						updateScreen();
+						ok();
+					}
+				},function(){alert("Can't reach server");error()});
+			}
+		},function(){alert("Can't reach server");error();});
+	}
 }
+
+function unlock_ui(){
+	if(player_status==null){
+		pname.disabled=false;
+		up_btn.disabled=true;
+		down_btn.disabled=true;
+		left_btn.disabled=true;
+		right_btn.disabled=true;
+		create_btn.disabled=false;
+		start_btn.disabled=false;
+		spawn_btn.disabled=true;
+	}else{
+		switch(player_status.state){
+		case "Alive":
+			pname.disabled=true;
+			up_btn.disabled=false;
+			down_btn.disabled=false;
+			left_btn.disabled=false;
+			right_btn.disabled=false;
+			create_btn.disabled=true;
+			start_btn.disabled=true;
+			spawn_btn.disabled=true;
+			break;
+		case "Dead":
+			pname.disabled=true;
+			up_btn.disabled=true;
+			down_btn.disabled=true;
+			left_btn.disabled=true;
+			right_btn.disabled=true;
+			create_btn.disabled=true;
+			start_btn.disabled=true;
+			spawn_btn.disabled=false;
+			break;
+		case "Spectating":
+			pname.disabled=true;
+			up_btn.disabled=false;
+			down_btn.disabled=false;
+			left_btn.disabled=false;
+			right_btn.disabled=false;
+			create_btn.disabled=true;
+			start_btn.disabled=true;
+			spawn_btn.disabled=false;
+			break;
+		}
+	}
+}
+
+function updateStatusText(){
+	if(player_status==null){
+		status_text.innerHTML="Status: Offline";
+	}else{
+		status_text.innerHTML="Status: "+player_status.state;
+	}
+}
+
+function lock_ui(){
+	pname.disabled=true;
+	up_btn.disabled=true;
+	down_btn.disabled=true;
+	left_btn.disabled=true;
+	right_btn.disabled=true;
+}
+
+document.onkeydown = checkKey;
+
+function checkKey(e) {
+	if(player_status!=null){
+		switch(e.keyCode){
+		case 37://left
+			left();
+			break;
+		case 38://up
+			up();
+			break;
+		case 39://right
+			right();
+			break;
+		case 40://down
+			down();
+			break;
+		}
+	}
+
+}
+
 </script>

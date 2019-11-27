@@ -1,13 +1,16 @@
 package com.ricardoluis.game.player;
 
 import java.util.ArrayList;
-import java.util.function.Consumer;
 
 public class PlayerManager {
 	static private PlayerManager manager=new PlayerManager();
 
 	private ArrayList<Player> players;
 
+	@FunctionalInterface
+	public interface PlayerIterator {
+		void execute(Player p);
+	}
 
 	private PlayerManager() {
 		players= new ArrayList<>();
@@ -17,8 +20,10 @@ public class PlayerManager {
 		return manager;
 	}
 
-	public void forEach(Consumer<? super Player> action) {
-		players.forEach(action);
+	public void forEach(PlayerIterator it) {
+		for(Player p:players) {
+			it.execute(p);
+		}
 	}
 
 	public boolean playerExists(String name) {
