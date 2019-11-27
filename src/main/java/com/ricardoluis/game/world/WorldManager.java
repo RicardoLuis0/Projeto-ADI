@@ -56,7 +56,31 @@ public class WorldManager {
 		return (x>=0&&y>=0&&x<sizex&&y<sizey);
 	}
 	public boolean validXY(int x,int y,boolean collide) {
-		return (x>=0&&y>=0&&x<sizex&&y<sizey)&&(!collide||!getXY(x,y).isObstacle());
+		if(x>=0&&y>=0&&x<sizex&&y<sizey) {
+			if(collide) {
+				class BoolContainer{
+					public boolean b;
+					public BoolContainer(boolean b) {
+						this.b=b;
+					}
+				}
+				BoolContainer has_player=new BoolContainer(false);
+				PlayerManager.getInstance().forEach((p)->{
+					if(p.isAlive()) {
+						int px=p.getX();
+						int py=p.getY();
+						if(px==x&&py==y) {
+							has_player.b=true;
+						}
+					}
+				});
+				return !(has_player.b||getXY(x,y).isObstacle());
+			} else {
+				return true;
+			}
+		} else {
+			return false;
+		}
 	}
 
 	public WorldTile getXY(int x,int y) {
